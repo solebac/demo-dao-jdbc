@@ -1,6 +1,5 @@
 package application;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +32,11 @@ public class Program01 {
 		for (Seller seller2 : list) {
 			System.out.println(seller2);
 		}
+		
+		System.out.println("\n=== Test 4: seller insert ===");
+		Seller newSeller = new Seller(null, "Green", "green@green", new Date(), 1000.0, obj1);
+		objSellerDao.insert(newSeller);
+		System.out.println("Insert new id.: " + newSeller.getId());
 		
 		
 	}
