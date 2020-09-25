@@ -2,6 +2,7 @@ package application;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 import entities.Department;
 import entities.Seller;
@@ -37,6 +38,20 @@ public class Program01 {
 		Seller newSeller = new Seller(null, "Green", "green@green", new Date(), 1000.0, obj1);
 		objSellerDao.insert(newSeller);
 		System.out.println("Insert new id.: " + newSeller.getId());
+		
+		System.out.println("\n=== Test 5: seller update ===");
+		Seller upSeller = objSellerDao.findById(1);
+		upSeller.setName("TANIA MARIA");
+		objSellerDao.update(upSeller);
+		System.out.println("Update realizado com success...!");
+		
+		Scanner sc = new Scanner(System.in);
+		System.out.println("\n=== Test 6: seller delete ===");
+		System.out.print("Enter id for delete teste.: ");
+		Integer id = sc.nextInt();
+		objSellerDao.deleteById(id);
+		System.out.println("Delete Completer");
+		
 		
 		
 	}
