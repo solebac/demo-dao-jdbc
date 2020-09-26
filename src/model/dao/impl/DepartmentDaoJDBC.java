@@ -5,9 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import com.mysql.cj.util.Base64Decoder;
+import java.util.Map;
 
 import db.DB;
 import db.DbException;
@@ -85,20 +86,90 @@ public class DepartmentDaoJDBC implements DepartmentDao{
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
+		
+		PreparedStatement st = null;
+		try {
+			st = conn.prepareStatement(
+					" DELETE FROM department "
+					+ " WHERE Id = ?"  
+			);
+			st.setInt(1, id);
+			int rows = st.executeUpdate();
+			if (rows <= 0) {
+				throw new DbException("Nenhum arquivo foi removido.");	
+			}
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}finally {
+			DB.closeStatement(st);
+		}
 		
 	}
 
 	@Override
 	public Department findById(Integer id) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+					" SELECT Id, "
+						    + " Name "
+						    + " FROM department "
+						    + " where Id = ? "
+			);
+			st.setInt(1, id);
+			rs = st.executeQuery();
+			if (rs.next()) {
+				Department department = instantiateDepartment(rs);
+				return department;	
+			}
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
 		return null;
+	}
+
+	private Department instantiateDepartment(ResultSet rs) throws SQLException {
+		Department department = new Department();
+		department.setId(rs.getInt("Id"));
+		department.setName(rs.getString("Name"));
+		return department;
 	}
 
 	@Override
 	public List<Department> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+					" SELECT Id, "
+						    + " Name "
+						    + " FROM department "
+			);
+			rs = st.executeQuery();
+			List<Department> list = new ArrayList<>();
+			Map<Integer, Department> map = new HashMap<>();
+			while (rs.next()) {
+				Department dep = instantiateDepartment(rs);
+				/*
+				 * Logica para dependencia 1=1
+				 * Department dep = map.get(rs.getInt("Id"));
+				if (dep == null) {
+					dep = new Department(rs.getInt("Id"), rs.getString("Name"));
+					map.put(rs.getInt("Id"), dep);
+				}*/
+				list.add(dep);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
 	}
 
 }
